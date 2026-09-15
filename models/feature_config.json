@@ -1,0 +1,285 @@
+{
+  "model_name": "XGBoost",
+  "model_path": "models\\traffic_forecaster_best.joblib",
+  "features": [
+    "hour",
+    "day_of_week",
+    "month",
+    "day_of_month",
+    "is_weekend",
+    "is_holiday",
+    "is_morning_rush_hour",
+    "is_evening_rush_hour",
+    "hour_sin",
+    "hour_cos",
+    "dow_sin",
+    "dow_cos",
+    "month_sin",
+    "month_cos",
+    "temp_celsius",
+    "rain_1h",
+    "snow_1h",
+    "clouds_all",
+    "weather_event_count",
+    "weather_severity_rank",
+    "traffic_lag_1h",
+    "traffic_lag_2h",
+    "traffic_lag_3h",
+    "traffic_lag_4h",
+    "traffic_lag_6h",
+    "traffic_lag_12h",
+    "traffic_lag_24h",
+    "traffic_lag_48h",
+    "traffic_lag_168h",
+    "traffic_roll_mean_6h",
+    "traffic_roll_std_6h",
+    "traffic_roll_min_6h",
+    "traffic_roll_max_6h",
+    "traffic_roll_mean_24h",
+    "traffic_roll_std_24h",
+    "traffic_roll_min_24h",
+    "traffic_roll_max_24h",
+    "traffic_roll_mean_168h",
+    "traffic_roll_std_168h"
+  ],
+  "feature_count": 39,
+  "target": "traffic_volume",
+  "dataset_split": {
+    "train_range": [
+      "2012-10-02 09:00:00",
+      "2017-09-30 23:00:00"
+    ],
+    "train_rows": 31842,
+    "val_range": [
+      "2017-10-01 00:00:00",
+      "2018-03-31 23:00:00"
+    ],
+    "val_rows": 4347,
+    "test_range": [
+      "2018-04-01 00:00:00",
+      "2018-09-30 23:00:00"
+    ],
+    "test_rows": 4386
+  },
+  "test_performance": [
+    {
+      "mae": 585.89,
+      "rmse": 813.69,
+      "smape": 25.82,
+      "r2": 0.8308,
+      "n": 4382,
+      "model": "Naive (1h)"
+    },
+    {
+      "mae": 540.22,
+      "rmse": 1019.98,
+      "smape": 20.48,
+      "r2": 0.7341,
+      "n": 4380,
+      "model": "Seasonal Naive (24h)"
+    },
+    {
+      "mae": 1713.8,
+      "rmse": 1953.42,
+      "smape": 60.94,
+      "r2": 0.0257,
+      "n": 4386,
+      "model": "Past-Only Moving Average (24h)"
+    },
+    {
+      "mae": 134.31,
+      "rmse": 203.24,
+      "smape": 5.66,
+      "r2": 0.9895,
+      "n": 4386,
+      "model": "LightGBM"
+    },
+    {
+      "mae": 130.84,
+      "rmse": 200.8,
+      "smape": 5.43,
+      "r2": 0.9897,
+      "n": 4386,
+      "model": "XGBoost"
+    }
+  ],
+  "slice_performance": [
+    {
+      "mae": 130.84,
+      "rmse": 200.8,
+      "smape": 5.43,
+      "r2": 0.9897,
+      "n": 4386,
+      "slice": "Overall Test Set"
+    },
+    {
+      "mae": 174.46,
+      "rmse": 237.63,
+      "smape": 3.3,
+      "r2": 0.922,
+      "n": 517,
+      "slice": "Morning Rush (06:00-09:00 Mon-Fri)"
+    },
+    {
+      "mae": 180.76,
+      "rmse": 238.64,
+      "smape": 3.28,
+      "r2": 0.922,
+      "n": 520,
+      "slice": "Evening Rush (15:00-18:00 Mon-Fri)"
+    },
+    {
+      "mae": 162.03,
+      "rmse": 216.81,
+      "smape": 2.8,
+      "r2": 0.8284,
+      "n": 1048,
+      "slice": "High Congestion (Volume >= 5000)"
+    },
+    {
+      "mae": 128.32,
+      "rmse": 200.85,
+      "smape": 4.78,
+      "r2": 0.9906,
+      "n": 3116,
+      "slice": "Weekday Operations"
+    },
+    {
+      "mae": 137.01,
+      "rmse": 200.69,
+      "smape": 7.01,
+      "r2": 0.9828,
+      "n": 1270,
+      "slice": "Weekend Operations"
+    }
+  ],
+  "top_10_features": [
+    {
+      "feature": "hour_cos",
+      "mean_abs_shap": 918.9719848632812
+    },
+    {
+      "feature": "traffic_lag_1h",
+      "mean_abs_shap": 601.6550903320312
+    },
+    {
+      "feature": "traffic_lag_168h",
+      "mean_abs_shap": 190.74578857421875
+    },
+    {
+      "feature": "traffic_roll_min_6h",
+      "mean_abs_shap": 93.2592544555664
+    },
+    {
+      "feature": "hour",
+      "mean_abs_shap": 90.67538452148438
+    },
+    {
+      "feature": "traffic_roll_max_6h",
+      "mean_abs_shap": 79.11762237548828
+    },
+    {
+      "feature": "hour_sin",
+      "mean_abs_shap": 56.5688591003418
+    },
+    {
+      "feature": "traffic_lag_24h",
+      "mean_abs_shap": 31.328889846801758
+    },
+    {
+      "feature": "traffic_lag_2h",
+      "mean_abs_shap": 29.698144912719727
+    },
+    {
+      "feature": "traffic_lag_4h",
+      "mean_abs_shap": 25.3148250579834
+    }
+  ],
+  "sarimax_contiguous_benchmark": {
+    "mae": 2605.46,
+    "rmse": 3124.73,
+    "smape": 133.47,
+    "r2": -1.7851,
+    "n": 383
+  },
+  "walk_forward_cv": {
+    "lightgbm": [
+      {
+        "mae": 158.32,
+        "rmse": 244.06,
+        "smape": 7.0,
+        "r2": 0.9848,
+        "n": 4316,
+        "fold": 1
+      },
+      {
+        "mae": 155.12,
+        "rmse": 240.73,
+        "smape": 6.41,
+        "r2": 0.9853,
+        "n": 4397,
+        "fold": 2
+      },
+      {
+        "mae": 169.73,
+        "rmse": 261.26,
+        "smape": 7.3,
+        "r2": 0.9823,
+        "n": 2147,
+        "fold": 3
+      }
+    ],
+    "xgboost": [
+      {
+        "mae": 153.71,
+        "rmse": 237.62,
+        "smape": 6.64,
+        "r2": 0.9856,
+        "n": 4316,
+        "fold": 1
+      },
+      {
+        "mae": 148.82,
+        "rmse": 231.22,
+        "smape": 6.1,
+        "r2": 0.9864,
+        "n": 4397,
+        "fold": 2
+      },
+      {
+        "mae": 164.51,
+        "rmse": 256.5,
+        "smape": 6.87,
+        "r2": 0.9829,
+        "n": 2147,
+        "fold": 3
+      }
+    ],
+    "seasonal_naive": [
+      {
+        "mae": 546.29,
+        "rmse": 1004.64,
+        "smape": 20.75,
+        "r2": 0.7429,
+        "n": 4288,
+        "fold": 1
+      },
+      {
+        "mae": 557.48,
+        "rmse": 1012.9,
+        "smape": 20.97,
+        "r2": 0.7391,
+        "n": 4379,
+        "fold": 2
+      },
+      {
+        "mae": 623.37,
+        "rmse": 1056.05,
+        "smape": 23.99,
+        "r2": 0.7093,
+        "n": 2136,
+        "fold": 3
+      }
+    ]
+  }
+}
