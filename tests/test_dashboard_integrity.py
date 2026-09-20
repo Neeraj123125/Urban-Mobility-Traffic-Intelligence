@@ -120,6 +120,56 @@ class TestDashboardIntegrity(unittest.TestCase):
         self.assertEqual(len(weekdays), 3116)
         self.assertEqual(len(weekends), 1270)
 
+    # --------------------------------------------------------------------------
+    # 6. KPI CARD & HTML RENDERING INTEGRITY
+    # --------------------------------------------------------------------------
+    def test_kpi_card_and_html_rendering_integrity(self):
+        """Verify KPI cards and all HTML markdown calls render cleanly without raw code blocks."""
+        with open(APP_PATH, "r", encoding="utf-8") as f:
+            app_code = f.read()
+
+        # Check render_kpi_card function exists and uses clean st.markdown
+        self.assertIn("def render_kpi_card(", app_code)
+        self.assertIn("st.markdown(html_content, unsafe_allow_html=True)", app_code)
+
+        # Confirm .kpi-top was not mistakenly added
+        self.assertNotIn(".kpi-top", app_code)
+
+        # Confirm standard KPI classes exist
+        self.assertIn(".kpi-card", app_code)
+        self.assertIn(".kpi-label", app_code)
+        self.assertIn(".kpi-value", app_code)
+        self.assertIn(".kpi-sub", app_code)
+
+        # Confirm no st.write, st.text, st.code calls exist in dashboard/app.py
+        import ast
+        tree = ast.parse(app_code)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                func_name = ""
+                curr = node.func
+                parts = []
+                while isinstance(curr, ast.Attribute):
+                    parts.append(curr.attr)
+                    curr = curr.value
+                if isinstance(curr, ast.Name):
+                    parts.append(curr.id)
+                    func_name = ".".join(reversed(parts))
+                self.assertNotIn(func_name, ["st.write", "st.text", "st.code"])
+
+                # For every st.markdown call that contains HTML, verify unsafe_allow_html=True
+                if "markdown" in func_name and node.args:
+                    arg = node.args[0]
+                    # If literal string with HTML
+                    if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                        if "<div" in arg.value or "<span" in arg.value or "<h" in arg.value:
+                            has_unsafe = any(kw.arg == "unsafe_allow_html" and getattr(kw.value, "value", None) is True for kw in node.keywords)
+                            self.assertTrue(has_unsafe, f"HTML markdown call at line {node.lineno} missing unsafe_allow_html=True")
+                            # Also check no blank line followed by 4+ spaces inside HTML
+                            lines = arg.value.split("\n")
+                            for i, l in enumerate(lines):
+                                self.assertFalse(l.startswith("    "), f"Indented line {i} in HTML markdown at line {node.lineno} could trigger code block")
+
 
 if __name__ == "__main__":
     unittest.main()
